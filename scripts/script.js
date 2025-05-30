@@ -110,15 +110,11 @@ mymap.on('click', function (e) {
 
 if (typeof pinData !== 'undefined') {
   pinData.forEach(pin => {
-L.marker([pin.y, pin.x], {
-  icon: customIcon(pin.icon)
-})
-.addTo(Icons["Locations"])
-.bindPopup(
-  pin.link
-    ? `<strong>${pin.label}</strong><br><a href="${pin.link}" target="_blank">${pin.link}</a>`
-    : `<strong>${pin.label}</strong>`
-);
+    L.marker([pin.y, pin.x], {
+      icon: customIcon(pin.icon)
+    })
+    .addTo(Icons["Locations"])
+    .on('click', () => displaySidebarContent(pin));
   });
 }
 
@@ -132,14 +128,11 @@ function updateMapWithPins(pins) {
   pins.forEach(pin => {
     if (Number.isFinite(pin.x) && Number.isFinite(pin.y)) {
       L.marker([pin.y, pin.x], {
-        icon: customIcon(pin.icon)
-      })
-      .addTo(Icons["Locations"])
-      .bindPopup(
-        pin.link
-          ? `<strong>${pin.label}</strong><br><a href="${pin.link}" target="_blank" rel="noopener noreferrer">${pin.link}</a>`
-          : `<strong>${pin.label}</strong>`
-      );
+  icon: customIcon(pin.icon)
+})
+.addTo(Icons["Locations"])
+
+.on('click', () => displaySidebarContent(pin));
     }
   });
 }
@@ -147,7 +140,7 @@ function updateMapWithPins(pins) {
 let currentPins = [];
 
 function loadPins() {
-  fetch("https://script.google.com/macros/s/AKfycbw3Pt-f9RCJ1WgPBiktQV1MHUnmbLu8ZdABZAvf7UdkHPaDVYbsETAIlRuyr96FjDIddg/exec")
+  fetch("https://script.google.com/macros/s/AKfycbyvnP6bVwfUavb_RYQi4VFKA8YM1PUpBa9XuNRJQfIZI6ZLjCvcREWgT1SlvdpdNb17TA/exec")
     .then(response => response.text())
     .then(jsCode => {
       window.pinData = undefined;
@@ -169,3 +162,33 @@ function loadPins() {
 
 loadPins();
 setInterval(loadPins, 10000);
+
+function displaySidebarContent(pin) {
+  const sidebar = document.getElementById("infoSidebar");
+  const content = document.getElementById("sidebarContent");
+  const coordBox = document.getElementById("clickCoords");
+
+  let html = "";
+
+  if (pin.gtaName) {
+    html += `<h3>${pin.gtaName}</h3>`;
+    if (pin.gtaImage) {
+      html += `<img src="${pin.gtaImage}" alt="${pin.gtaName}" style="width:100%; margin-bottom:10px;">`;
+    }
+  }
+
+  if (pin.realName) {
+    html += `<h4>Real World: ${pin.realName}</h4>`;
+    if (pin.realImage) {
+      html += `<img src="${pin.realImage}" alt="${pin.realName}" style="width:100%;">`;
+    }
+  }
+
+  content.innerHTML = html;
+  sidebar.style.display = "block";
+
+  // Move coordinate box to the right of sidebar
+  if (coordBox) {
+    coordBox.style.left = "320px";  // 300px sidebar + 20px margin
+  }
+}
