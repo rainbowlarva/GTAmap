@@ -147,7 +147,7 @@ function loadPins() {
       eval(jsCode);
 
       if (!Array.isArray(window.pinData)) {
-        console.error("pinData is not defined or not an array.");
+        console.error("pinData is not defined or is not an array.");
         return;
       }
 
@@ -157,7 +157,7 @@ function loadPins() {
         currentPins = window.pinData;
       }
     })
-    .catch(err => console.error("Error fetching pin data:", err));
+    .catch(err => console.error("Error fetching the pindata:", err));
 }
 
 loadPins();
@@ -178,7 +178,7 @@ function displaySidebarContent(pin) {
   }
 
   if (pin.realName) {
-    html += `<h4>Real World: ${pin.realName}</h4>`;
+    html += `<h4>${pin.realName}</h4>`;
     if (pin.realImage) {
       html += `<img src="${pin.realImage}" alt="${pin.realName}" style="width:100%;">`;
     }
